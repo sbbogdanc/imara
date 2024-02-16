@@ -1,0 +1,4 @@
+google-cloud-aiplatform
+google-cloud-pipeline-components==2.9.0
+kfp
+pytest
