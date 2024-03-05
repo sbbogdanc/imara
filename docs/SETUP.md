@@ -142,6 +142,7 @@ Make sure the default Compute Engine [service account][sa] has sufficient permis
     gcloud artifacts repositories create $PIPELINE_REGISTRY \
     --location=$REGION \
     --repository-format=KFP
+    --project $PROJECT
     ```
 
 ## Configuration
