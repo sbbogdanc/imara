@@ -82,26 +82,16 @@ Make sure the default Compute Engine [service account][sa] has sufficient permis
      --role="roles/aiplatform.user"
      ```
 
- 5. Add the `roles/storage.objectCreator` role.
+ 5. Add the `roles/storage.admin` role.
 
      ```shell
      gcloud projects add-iam-policy-binding $PROJECT_ID \
      --member=serviceAccount:$(gcloud projects describe $PROJECT_ID \
      --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
-     --role="roles/storage.objectCreator"
+     --role="roles/storage.admin"
      ```
 
- 6. Add the `roles/storage.objectViewer` role.
-
-     ```shell
-     gcloud projects add-iam-policy-binding $PROJECT_ID \
-     --member=serviceAccount:$(gcloud projects describe $PROJECT_ID \
-     --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
-     --role="roles/storage.objectViewer"
-    ```
-
-
- 7. Add the `roles/artifactregistry.writer` role.
+ 6. Add the `roles/artifactregistry.writer` role.
 
      ```shell
      gcloud projects add-iam-policy-binding $PROJECT_ID \
