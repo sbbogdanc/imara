@@ -14,7 +14,7 @@
 
 substitutions:
   _GCS_BUCKET: gs://${PROJECT_ID}-rlhf-artifacts
-  _PIPELINE_REGISTRY: rlhf-pipelines
+  _PIPELINE_REGISTRY: ${PROJECT_ID}-rlhf-pipelines
   _REGION: us-central1
   _MODEL_DISPLAY_NAME: rlhf-tuned-text-bison
   _TMPDIR: deploy/tmp
@@ -107,7 +107,7 @@ steps:
 
       job.run()
 
-  - id: create prediction endpoint
+  - id: create prediction endpoints
     name: google/cloud-sdk:latest
     entrypoint: bash
     args:
@@ -116,7 +116,12 @@ steps:
       gcloud ai endpoints create \
       --project="${PROJECT_ID}" \
       --region="${_REGION}" \
-      --display-name="${_MODEL_DISPLAY_NAME}-endpoint" \
+      --display-name="${_MODEL_DISPLAY_NAME}-dev-endpoint"
+      
+      gcloud ai endpoints create \
+      --project="${PROJECT_ID}" \
+      --region="${_REGION}" \
+      --display-name="${_MODEL_DISPLAY_NAME}-staging-endpoint"
 
   - id: create cloud deploy resources
     name: google/cloud-sdk:latest
@@ -124,23 +129,35 @@ steps:
     args:
     - -c
     - |
-      ENDPOINT_ID=`gcloud ai endpoints list \
+      DEV_ENDPOINT_ID=`gcloud ai endpoints list \
       --project=${PROJECT_ID} \
       --region=${_REGION} \
-      --filter="DISPLAY_NAME: ${_MODEL_DISPLAY_NAME}" \
+      --filter="DISPLAY_NAME: ${_MODEL_DISPLAY_NAME}-dev-endpoint" \
       --sort-by=~creationTimestamp \
       --limit=1 \
       --format="flattened(name)" \
       | awk '{print $2}' | tr -d '\n' | sed 's:.*/::'`
       
-      echo "ENDPOINT_ID: $${ENDPOINT_ID}"
+      echo "DEV_ENDPOINT_ID: $${DEV_ENDPOINT_ID}"
+
+      STAGING_ENDPOINT_ID=`gcloud ai endpoints list \
+      --project=${PROJECT_ID} \
+      --region=${_REGION} \
+      --filter="DISPLAY_NAME: ${_MODEL_DISPLAY_NAME}-staging-endpoint" \
+      --sort-by=~creationTimestamp \
+      --limit=1 \
+      --format="flattened(name)" \
+      | awk '{print $2}' | tr -d '\n' | sed 's:.*/::'`
+
+      echo "STAGING_ENDPOINT_ID: $${STAGING_ENDPOINT_ID}"
 
       mkdir -p "${_TMPDIR}"
 
       deploy/replace_variables.sh \
       -p "${PROJECT_ID}" \
       -r "${_REGION}" \
-      -e "$${ENDPOINT_ID}" \
+      -d "$${DEV_ENDPOINT_ID}" \
+      -s "$${STAGING_ENDPOINT_ID}" \
       -t "${_TMPDIR}"
 
   - id: apply cloud deploy configuration

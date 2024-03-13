@@ -15,6 +15,18 @@ This project uses a suite of Google Cloud products to facilitate CI/CT/CD of the
 
 Upon any code or data changes in this repository, Cloud Build triggers the execution of the [workflow], ensuring efficient and reliable GenAI application development and delivery.
 
+#### Setup
+
+In addition to the basic [SETUP], setup needs to be done for Cloud Deploy integration.
+
+Create the necessary vertex deployer image and Cloud Deploy Custom Target Type.
+```shell
+git clone https://github.com/GoogleCloudPlatform/cloud-deploy-samples && \
+cloud-deploy-samples/custom-targets/vertex-ai/build_and_register.sh -p $PROJECT_ID -r $REGION && \
+rm -rf cloud-deploy-samples
+```
+
+
 #### Tutorial
 
 ##### Workflow
@@ -47,3 +59,4 @@ This is guide for setting up your own automation on your fork of this repository
 [trigger]: https://cloud.google.com/build/docs/automating-builds/create-manage-triggers#build_trigger
 [clone]: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo#cloning-your-forked-repository
 [workflow]: /.cloudbuild/cloudbuild.yaml
+[SETUP]: SETUP.md

@@ -2,7 +2,11 @@
 
 export _CT_IMAGE_NAME=vertexai
 
-while getopts "p:r:e:t:" arg; do
+usage() {
+  echo "usage: replace_variables.sh -p <project_id> -r <region> -d <dev_endpoint> -s <staging_endpoint> -t <tmp_dir>"
+}
+
+while getopts "p:r:d:s:t:" arg; do
   case "${arg}" in
     p)
       PROJECT="${OPTARG}"
@@ -10,8 +14,11 @@ while getopts "p:r:e:t:" arg; do
     r)
       REGION="${OPTARG}"
       ;;
-    e)
-      ENDPOINT="${OPTARG}"
+    d)
+      DEV_ENDPOINT="${OPTARG}"
+      ;;
+    s)
+      STAGING_ENDPOINT="${OPTARG}"
       ;;
     t)
       TMPDIR="${OPTARG}"
@@ -23,7 +30,7 @@ while getopts "p:r:e:t:" arg; do
   esac
 done
 
-if [[ ! -v PROJECT || ! -v REGION || ! -v ENDPOINT || ! -v TMPDIR ]]; then
+if [[ ! -v PROJECT || ! -v REGION || ! -v DEV_ENDPOINT || ! -v STAGING_ENDPOINT || ! -v TMPDIR ]]; then
   usage
   exit 1
 fi
@@ -41,7 +48,8 @@ cp -r deploy/configuration "$TMPDIR"/configuration
 # replace variables in clouddeploy.yaml with actual values
 sed -i "s/\$PROJECT_ID/${PROJECT}/g" "$TMPDIR"/clouddeploy.yaml
 sed -i "s/\$REGION/${REGION}/g" "$TMPDIR"/clouddeploy.yaml
-sed -i "s/\$ENDPOINT_ID/${ENDPOINT}/g" "$TMPDIR"/clouddeploy.yaml
+sed -i "s/\$DEV_ENDPOINT_ID/${DEV_ENDPOINT}/g" "$TMPDIR"/clouddeploy.yaml
+sed -i "s/\$STAGING_ENDPOINT_ID/${STAGING_ENDPOINT}/g" "$TMPDIR"/clouddeploy.yaml
 
 # replace variables in configuration/skaffold.yaml with actual values
 sed -i "s/\$REGION/${REGION}/g" "$TMPDIR"/configuration/skaffold.yaml
