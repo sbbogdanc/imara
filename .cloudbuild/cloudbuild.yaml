@@ -107,21 +107,49 @@ steps:
 
       job.run()
 
-  - id: create prediction endpoints
+  - id: create missing prediction endpoints
     name: google/cloud-sdk:latest
     entrypoint: bash
     args:
     - -c
     - |
-      gcloud ai endpoints create \
-      --project="${PROJECT_ID}" \
-      --region="${_REGION}" \
-      --display-name="${_MODEL_DISPLAY_NAME}-dev-endpoint"
-      
-      gcloud ai endpoints create \
-      --project="${PROJECT_ID}" \
-      --region="${_REGION}" \
-      --display-name="${_MODEL_DISPLAY_NAME}-staging-endpoint"
+      # Get the most recent dev endpoint with the display name.
+      DEV_ENDPOINT_ID=`gcloud ai endpoints list \
+        --project=${PROJECT_ID} \
+        --region=${_REGION} \
+        --filter="DISPLAY_NAME: ${_MODEL_DISPLAY_NAME}-dev-endpoint" \
+        --sort-by=~creationTimestamp \
+        --limit=1 \
+        --format="flattened(name)" \
+        | awk '{print $2}' | tr -d '\n' | sed 's:.*/::'`
+
+      if [ -z "$${DEV_ENDPOINT_ID}" ];
+      then
+        echo "creating dev endpoint"
+        gcloud ai endpoints create \
+        --project="${PROJECT_ID}" \
+        --region="${_REGION}" \
+        --display-name="${_MODEL_DISPLAY_NAME}-dev-endpoint"
+      fi
+
+      # Get the most recent staging endpoint with the display name.
+      STAGING_ENDPOINT_ID=`gcloud ai endpoints list \
+        --project=${PROJECT_ID} \
+        --region=${_REGION} \
+        --filter="DISPLAY_NAME: ${_MODEL_DISPLAY_NAME}-staging-endpoint" \
+        --sort-by=~creationTimestamp \
+        --limit=1 \
+        --format="flattened(name)" \
+        | awk '{print $2}' | tr -d '\n' | sed 's:.*/::'`
+
+      if [ -z "$${STAGING_ENDPOINT_ID}" ];
+      then
+        echo "creating staging endpoint"
+        gcloud ai endpoints create \
+        --project="${PROJECT_ID}" \
+        --region="${_REGION}" \
+        --display-name="${_MODEL_DISPLAY_NAME}-staging-endpoint"
+      fi
 
   - id: create cloud deploy resources
     name: google/cloud-sdk:latest

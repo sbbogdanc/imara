@@ -17,7 +17,7 @@ Upon any code or data changes in this repository, Cloud Build triggers the execu
 
 #### Setup
 
-In addition to the basic [SETUP], setup needs to be done for Cloud Deploy integration.
+In addition to the basic [SETUP], the following setup needs to be done for Cloud Deploy integration.
 
 Create the necessary vertex deployer image and Cloud Deploy Custom Target Type.
 ```shell
@@ -25,7 +25,6 @@ git clone https://github.com/GoogleCloudPlatform/cloud-deploy-samples && \
 cloud-deploy-samples/custom-targets/vertex-ai/build_and_register.sh -p $PROJECT_ID -r $REGION && \
 rm -rf cloud-deploy-samples
 ```
-
 
 #### Tutorial
 
