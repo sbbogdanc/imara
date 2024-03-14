@@ -55,25 +55,7 @@ Make sure the default Compute Engine [service account][sa] has sufficient permis
      --project=$PROJECT_ID
      ```
 
- 2. Add the `clouddeploy.jobRunner` role.
-
-     ```shell
-     gcloud projects add-iam-policy-binding $PROJECT_ID \
-     --member=serviceAccount:$(gcloud projects describe $PROJECT_ID \
-     --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
-     --role="roles/clouddeploy.jobRunner"
-     ```
-
- 3. Add the `roles/clouddeploy.viewer` role.
-
-     ```shell
-     gcloud projects add-iam-policy-binding $PROJECT_ID \
-     --member=serviceAccount:$(gcloud projects describe $PROJECT_ID \
-     --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
-     --role="roles/clouddeploy.viewer"
-     ```
-
- 4. Add the `roles/aiplatform.user` role.
+ 1. Add the `roles/aiplatform.user` role.
 
      ```shell
      gcloud projects add-iam-policy-binding $PROJECT_ID \
@@ -82,7 +64,7 @@ Make sure the default Compute Engine [service account][sa] has sufficient permis
      --role="roles/aiplatform.user"
      ```
 
- 5. Add the `roles/artifactregistry.writer` role.
+ 1. Add the `roles/artifactregistry.writer` role.
 
      ```shell
      gcloud projects add-iam-policy-binding $PROJECT_ID \
@@ -91,7 +73,7 @@ Make sure the default Compute Engine [service account][sa] has sufficient permis
      --role="roles/artifactregistry.writer"
      ```
 
- 6. Add the `roles/storage.objectCreator` role.
+ 1. Add the `roles/storage.objectCreator` role.
 
     ```shell
     gcloud projects add-iam-policy-binding $PROJECT_ID \
@@ -100,7 +82,7 @@ Make sure the default Compute Engine [service account][sa] has sufficient permis
     --role="roles/storage.objectCreator"
     ```
 
- 7. Add the `roles/storage.objectViewer` role.
+ 1. Add the `roles/storage.objectViewer` role.
 
     ```shell
     gcloud projects add-iam-policy-binding $PROJECT_ID \
@@ -109,7 +91,7 @@ Make sure the default Compute Engine [service account][sa] has sufficient permis
     --role="roles/storage.objectViewer"
     ```
 
- 6. Create a role for reading storage buckets and add it.
+ 1. Create a role for reading storage buckets and add it.
 
      ```shell
      gcloud iam roles create storageBucketGet \

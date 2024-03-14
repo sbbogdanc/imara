@@ -107,99 +107,20 @@ steps:
 
       job.run()
 
-  - id: create missing prediction endpoints
+  - id: populate skaffold configuration with values
     name: google/cloud-sdk:latest
     entrypoint: bash
     args:
     - -c
     - |
-      # Get the most recent dev endpoint with the display name.
-      DEV_ENDPOINT_ID=`gcloud ai endpoints list \
-        --project=${PROJECT_ID} \
-        --region=${_REGION} \
-        --filter="DISPLAY_NAME: ${_MODEL_DISPLAY_NAME}-dev-endpoint" \
-        --sort-by=~creationTimestamp \
-        --limit=1 \
-        --format="flattened(name)" \
-        | awk '{print $2}' | tr -d '\n' | sed 's:.*/::'`
-
-      if [ -z "$${DEV_ENDPOINT_ID}" ];
-      then
-        echo "creating dev endpoint"
-        gcloud ai endpoints create \
-        --project="${PROJECT_ID}" \
-        --region="${_REGION}" \
-        --display-name="${_MODEL_DISPLAY_NAME}-dev-endpoint"
-      fi
-
-      # Get the most recent staging endpoint with the display name.
-      STAGING_ENDPOINT_ID=`gcloud ai endpoints list \
-        --project=${PROJECT_ID} \
-        --region=${_REGION} \
-        --filter="DISPLAY_NAME: ${_MODEL_DISPLAY_NAME}-staging-endpoint" \
-        --sort-by=~creationTimestamp \
-        --limit=1 \
-        --format="flattened(name)" \
-        | awk '{print $2}' | tr -d '\n' | sed 's:.*/::'`
-
-      if [ -z "$${STAGING_ENDPOINT_ID}" ];
-      then
-        echo "creating staging endpoint"
-        gcloud ai endpoints create \
-        --project="${PROJECT_ID}" \
-        --region="${_REGION}" \
-        --display-name="${_MODEL_DISPLAY_NAME}-staging-endpoint"
-      fi
-
-  - id: create cloud deploy resources
-    name: google/cloud-sdk:latest
-    entrypoint: bash
-    args:
-    - -c
-    - |
-      DEV_ENDPOINT_ID=`gcloud ai endpoints list \
-      --project=${PROJECT_ID} \
-      --region=${_REGION} \
-      --filter="DISPLAY_NAME: ${_MODEL_DISPLAY_NAME}-dev-endpoint" \
-      --sort-by=~creationTimestamp \
-      --limit=1 \
-      --format="flattened(name)" \
-      | awk '{print $2}' | tr -d '\n' | sed 's:.*/::'`
-      
-      echo "DEV_ENDPOINT_ID: $${DEV_ENDPOINT_ID}"
-
-      STAGING_ENDPOINT_ID=`gcloud ai endpoints list \
-      --project=${PROJECT_ID} \
-      --region=${_REGION} \
-      --filter="DISPLAY_NAME: ${_MODEL_DISPLAY_NAME}-staging-endpoint" \
-      --sort-by=~creationTimestamp \
-      --limit=1 \
-      --format="flattened(name)" \
-      | awk '{print $2}' | tr -d '\n' | sed 's:.*/::'`
-
-      echo "STAGING_ENDPOINT_ID: $${STAGING_ENDPOINT_ID}"
-
       mkdir -p "${_TMPDIR}"
 
       deploy/replace_variables.sh \
       -p "${PROJECT_ID}" \
       -r "${_REGION}" \
-      -d "$${DEV_ENDPOINT_ID}" \
-      -s "$${STAGING_ENDPOINT_ID}" \
       -t "${_TMPDIR}"
 
-  - id: apply cloud deploy configuration
-    name: google/cloud-sdk:latest
-    entrypoint: bash
-    args:
-    - -c
-    - |
-      gcloud deploy apply \
-      --file="${_TMPDIR}/clouddeploy.yaml" \
-      --project="${PROJECT_ID}" \
-      --region="${_REGION}" 
-
-  - id: create a release and rollout
+  - id: create a release and rollout to dev
     name: google/cloud-sdk:latest
     entrypoint: bash
     args:
@@ -253,5 +174,6 @@ steps:
       --delivery-pipeline="$${DELIVERY_PIPELINE_NAME}" \
       --project="${PROJECT_ID}" \
       --region="${_REGION}"
-
+options:
+    dynamicSubstitutions: true
 timeout: 86400s
