@@ -14,7 +14,7 @@
 
 substitutions:
   _GCS_BUCKET: gs://${PROJECT_ID}-rlhf-artifacts
-  _PIPELINE_REGISTRY: rlhf-pipelines
+  _PIPELINE_REGISTRY: ${PROJECT_ID}-rlhf-pipelines
   _REGION: us-central1
   _MODEL_DISPLAY_NAME: rlhf-tuned-text-bison
   _TMPDIR: deploy/tmp
@@ -107,54 +107,20 @@ steps:
 
       job.run()
 
-  - id: create prediction endpoint
+  - id: populate skaffold configuration with values
     name: google/cloud-sdk:latest
     entrypoint: bash
     args:
     - -c
     - |
-      gcloud ai endpoints create \
-      --project="${PROJECT_ID}" \
-      --region="${_REGION}" \
-      --display-name="${_MODEL_DISPLAY_NAME}-endpoint" \
-
-  - id: create cloud deploy resources
-    name: google/cloud-sdk:latest
-    entrypoint: bash
-    args:
-    - -c
-    - |
-      ENDPOINT_ID=`gcloud ai endpoints list \
-      --project=${PROJECT_ID} \
-      --region=${_REGION} \
-      --filter="DISPLAY_NAME: ${_MODEL_DISPLAY_NAME}" \
-      --sort-by=~creationTimestamp \
-      --limit=1 \
-      --format="flattened(name)" \
-      | awk '{print $2}' | tr -d '\n' | sed 's:.*/::'`
-      
-      echo "ENDPOINT_ID: $${ENDPOINT_ID}"
-
       mkdir -p "${_TMPDIR}"
 
       deploy/replace_variables.sh \
       -p "${PROJECT_ID}" \
       -r "${_REGION}" \
-      -e "$${ENDPOINT_ID}" \
       -t "${_TMPDIR}"
 
-  - id: apply cloud deploy configuration
-    name: google/cloud-sdk:latest
-    entrypoint: bash
-    args:
-    - -c
-    - |
-      gcloud deploy apply \
-      --file="${_TMPDIR}/clouddeploy.yaml" \
-      --project="${PROJECT_ID}" \
-      --region="${_REGION}" 
-
-  - id: create a release and rollout
+  - id: create a release and rollout to dev
     name: google/cloud-sdk:latest
     entrypoint: bash
     args:
@@ -208,5 +174,6 @@ steps:
       --delivery-pipeline="$${DELIVERY_PIPELINE_NAME}" \
       --project="${PROJECT_ID}" \
       --region="${_REGION}"
-
+options:
+    dynamicSubstitutions: true
 timeout: 86400s
