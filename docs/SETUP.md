@@ -34,6 +34,7 @@
       aiplatform.googleapis.com \
       artifactregistry.googleapis.com \
       compute.googleapis.com \
+      cloudapis.googleapis.com \
       cloudbuild.googleapis.com \
       clouddeploy.googleapis.com  \
       notebooks.googleapis.com \
@@ -55,25 +56,7 @@ Make sure the default Compute Engine [service account][sa] has sufficient permis
      --project=$PROJECT_ID
      ```
 
- 2. Add the `clouddeploy.jobRunner` role.
-
-     ```shell
-     gcloud projects add-iam-policy-binding $PROJECT_ID \
-     --member=serviceAccount:$(gcloud projects describe $PROJECT_ID \
-     --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
-     --role="roles/clouddeploy.jobRunner"
-     ```
-
- 3. Add the `roles/clouddeploy.viewer` role.
-
-     ```shell
-     gcloud projects add-iam-policy-binding $PROJECT_ID \
-     --member=serviceAccount:$(gcloud projects describe $PROJECT_ID \
-     --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
-     --role="roles/clouddeploy.viewer"
-     ```
-
- 4. Add the `roles/aiplatform.user` role.
+ 1. Add the `roles/aiplatform.user` role.
 
      ```shell
      gcloud projects add-iam-policy-binding $PROJECT_ID \
@@ -82,32 +65,45 @@ Make sure the default Compute Engine [service account][sa] has sufficient permis
      --role="roles/aiplatform.user"
      ```
 
- 5. Add the `roles/storage.objectCreator` role.
-
-     ```shell
-     gcloud projects add-iam-policy-binding $PROJECT_ID \
-     --member=serviceAccount:$(gcloud projects describe $PROJECT_ID \
-     --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
-     --role="roles/storage.objectCreator"
-     ```
-
- 6. Add the `roles/storage.objectViewer` role.
-
-     ```shell
-     gcloud projects add-iam-policy-binding $PROJECT_ID \
-     --member=serviceAccount:$(gcloud projects describe $PROJECT_ID \
-     --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
-     --role="roles/storage.objectViewer"
-    ```
-
-
- 7. Add the `roles/artifactregistry.writer` role.
+ 1. Add the `roles/artifactregistry.writer` role.
 
      ```shell
      gcloud projects add-iam-policy-binding $PROJECT_ID \
      --member=serviceAccount:$(gcloud projects describe $PROJECT_ID \
      --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
      --role="roles/artifactregistry.writer"
+     ```
+
+ 1. Add the `roles/storage.objectCreator` role.
+
+    ```shell
+    gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member=serviceAccount:$(gcloud projects describe $PROJECT_ID \
+    --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
+    --role="roles/storage.objectCreator"
+    ```
+
+ 1. Add the `roles/storage.objectViewer` role.
+
+    ```shell
+    gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member=serviceAccount:$(gcloud projects describe $PROJECT_ID \
+    --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
+    --role="roles/storage.objectViewer"
+    ```
+
+ 1. Create a role for reading storage buckets and add it.
+
+     ```shell
+     gcloud iam roles create storageBucketGet \
+        --project=$PROJECT_ID \
+        --title="Storage Bucket Getter" \
+        --permissions="storage.buckets.get" 
+
+     gcloud projects add-iam-policy-binding $PROJECT_ID \
+     --member=serviceAccount:$(gcloud projects describe $PROJECT_ID \
+     --format="value(projectNumber)")-compute@developer.gserviceaccount.com \
+     --role="projects/$PROJECT_ID/roles/storageBucketGet"
      ```
 
 ## Storage
@@ -142,7 +138,7 @@ Make sure the default Compute Engine [service account][sa] has sufficient permis
     gcloud artifacts repositories create $PIPELINE_REGISTRY \
     --location=$REGION \
     --repository-format=KFP \
-    --project $PROJECT_ID
+    --project=$PROJECT_ID
     ```
 
 ## Configuration
