@@ -34,6 +34,7 @@
       aiplatform.googleapis.com \
       artifactregistry.googleapis.com \
       compute.googleapis.com \
+      cloudapis.googleapis.com \
       cloudbuild.googleapis.com \
       clouddeploy.googleapis.com  \
       notebooks.googleapis.com \
