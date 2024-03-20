@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 export _CT_IMAGE_NAME=vertexai
 
