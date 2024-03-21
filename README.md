@@ -1,4 +1,4 @@
-# GenAI application development and deployment with Google Cloud Platform
+## GenAI application development and deployment with Google Cloud Platform
 
 The following demonstrates GenAI application development within the Google Cloud Platform, including:
 
