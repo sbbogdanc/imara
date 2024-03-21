@@ -5,11 +5,11 @@ The following demonstrates GenAI application development within the Google Cloud
 * **Model tuning**. Tuning of Google and Hugging Face foundation models using Reinforcement Learning from Human Feedback (RLHF) in Vertex AI.
 * **ML Operations**. Automating Continuous Integration (CI), Continuous Training (CT) and Continuous Delivery (CD) for machine learning operations ('MLOps'). This automation streamlines the development and deployment processes, ensuring efficient and reliable model updates to deliver value to users more quickly.
 
-## Setup
+### Setup
 
 To begin, follow the [setup](/docs/SETUP.md) guide to configure a project, service accounts, permissions, storage and more.
 
-## Develop
+### Develop model
 
 Jupyter notebooks provide a highly interactive environment for model development which supports iterative refinement of machine learning models.
 
@@ -19,7 +19,7 @@ This project provides several notebooks:
 
 The notebooks can be executed locally or on Vertex AI through Vertex AI [Workbench].
 
-#### Vertex AI Workbench
+##### Vertex AI Workbench
 
 To use Vertex AI Workbench:
 
@@ -27,7 +27,7 @@ To use Vertex AI Workbench:
 1. [Clone][vertex-wb-git] this GitHub repository in your instance. 
 1. Open a notebook within your Vertex AI Workbench instance and execute the steps.
 
-## Deploy
+### Deploy
 
 The following demonstrates MLOps Continuous Integration (CI), Continuous Training (CT) and Continuous Delivery (CD) to accelerate deployment of LLM models into production for use with GenAI applications.
 
