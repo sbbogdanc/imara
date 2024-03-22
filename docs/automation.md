@@ -2,8 +2,6 @@
 
 This project demonstrates Continuous Integration (CI), Continuous Training (CT) and Continuous Delivery (CD) to accelerate deployment of LLMs into production and delivery of GenAI applications. 
 
-### Google Cloud
-
 #### Overview
 
 This project uses a suite of Google Cloud products to facilitate CI/CT/CD of the [PaLM 2 Text Bison] model, including:
